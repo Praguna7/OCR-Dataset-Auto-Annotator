@@ -162,6 +162,8 @@ class utills:
     # Function to get bounding boxes for lines
     @staticmethod
     def findLines(full_image):
+        x_pad = 15
+        y_pad = 7
         # Convert to grayscale and threshold the image
         gray = full_image #cv2.cvtColor(full_image, cv2.COLOR_BGR2GRAY)
         _, thresh = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY_INV)
@@ -176,7 +178,7 @@ class utills:
         for cnt in contours:
             if cv2.contourArea(cnt) > 5:  # Adjust threshold to eliminate small artifacts
                 x, y, w, h = cv2.boundingRect(cnt)
-                lines.append([x, y, w, h])
+                lines.append([x-x_pad, y-y_pad, w+x_pad*2, h+y_pad*2])
         return lines[::-1]
 
     # Function to transform a bounding box from aligned PDF image back to original PDF coordinates
