@@ -265,7 +265,6 @@ class utills:
         return bbox_to_unicode_dict
     @staticmethod
     def create_result_zip(photo_img, segments, page_num):
-        print("segments",segments)
         images = []
         texts = []
         output_dir = "./temp"
@@ -276,7 +275,6 @@ class utills:
 
         for segment in segments:
             if not segment["approved"]:
-                print("continues",segment)
                 continue
 
             cropped_img = Image(photo_img).crop(
@@ -290,10 +288,10 @@ class utills:
 
             image_path = f"{img_dir}/{unique_filename}"
             cv2.imwrite(image_path, cropped_img)
-            print("Saving image to", image_path)
+            # print("Saving image to", image_path)
 
             images.append(unique_filename)
-            print("image",len(images))
+            # print("image",len(images))
             texts.append(segment["text"])
 
         # Save the DataFrame as a CSV
@@ -347,7 +345,7 @@ class utills:
 
             image_path = f"{img_dir}/{unique_filename}"
             cv2.imwrite(image_path, cropped_img)
-            print("saving image to ",image_path)
+            # print("saving image to ",image_path)
 
             images.append(unique_filename)
             texts.append(text)

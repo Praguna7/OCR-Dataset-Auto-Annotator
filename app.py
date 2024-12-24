@@ -273,6 +273,7 @@ def main():
                         """, unsafe_allow_html=True)
                     show_segment_compact(global_idx, seg_info, st.session_state.corrected_upload_images[page_num], unique_tag=str(page_num))
 
+                st.divider()
                 # Page nav
                 nav_left,dummuy_col_1,dummuy_col_2 ,nav_mid,dummuy_col_3,dummuy_col_4, nav_right = st.columns(7)
                 with nav_left:
@@ -281,7 +282,6 @@ def main():
                         st.session_state.page_num_idx -= 1
                         # Reset segment pagination
                         # st.session_state.segment_page_num = 0
-                        st.stop()
                         st.rerun()
                     st.markdown("</div>", unsafe_allow_html=True)
                 with nav_mid:
@@ -293,7 +293,6 @@ def main():
                     if st.button("Next PDF Page ➡️", disabled=(page_num>=len(list(uploaded_images.keys()))-1)):
                         st.session_state.page_num_idx += 1
                         # st.session_state.segment_page_num = 0
-                        st.stop()
                         st.rerun()
     with tab_how:
         st.header("How to Use the OCR Dataset Auto Annotator")
