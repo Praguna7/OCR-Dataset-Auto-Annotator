@@ -201,8 +201,6 @@ def main():
         uploaded_images = st.session_state.uploaded_images
         st.write(f"**PDF Pages Count**: {pdf_pages_count}")
         st.write(f"**Uploaded Images Count**: {len(uploaded_images)}")
-        if len(st.session_state.uploaded_images) > 0:
-            st.write("**Uploaded images for pages**:", list(st.session_state.uploaded_images.keys()))
 
     # ---- TAB 2: APPROVAL & REJECTION
     with tab_approve:
