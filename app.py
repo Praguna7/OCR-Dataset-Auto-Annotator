@@ -216,7 +216,7 @@ def main():
 
             page_num = list(uploaded_images.keys())[st.session_state.page_num_idx]
             st.markdown(f"**Viewing Page: {page_num+1} / {num_pdf_pages}**")
-            st.markdown(f"**Image: {page_num+1} / {len(list(uploaded_images.keys()))}**")
+            # st.markdown(f"**Image: {page_num+1} / {len(list(uploaded_images.keys()))}**")
             current_img = st.session_state.uploaded_images.get(page_num)
             if current_img is None:
                 st.warning(f"No scanned image found for page {page_num}.")
@@ -288,7 +288,7 @@ def main():
                     st.markdown("</div>", unsafe_allow_html=True)
                     download_btn(all_segments,page_num)
                 with nav_right:                    
-                    if st.button("Next PDF Page ➡️", disabled=(page_num>=len(list(uploaded_images.keys()))-1)):
+                    if st.button("Next PDF Page ➡️", disabled=(st.session_state.page_num_idx>=len(list(uploaded_images.keys()))-1)):
                         st.session_state.page_num_idx += 1
                         # st.session_state.segment_page_num = 0
                         st.rerun()
