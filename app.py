@@ -53,24 +53,29 @@ def render_dpad(line_info, key_prefix="arrow"):
                 line_info["pt"] = 0
                 line_info["pl"] = 0
                 line_info["pr"] = 0
+                line_info["padding_corrected"] = False
                 st.rerun(scope="fragment")
         with row1[1]:
             if st.button("▲", key=f"{key_prefix}_up"):
                 line_info["pb"] += 10
+                line_info["padding_corrected"] = True
                 st.rerun(scope="fragment")
 
         row2 = st.columns([1, 1,1])
         with row2[0]:
             if st.button("◀", key=f"{key_prefix}_left"):
                 line_info["pl"] += 10
+                line_info["padding_corrected"] = True
                 st.rerun(scope="fragment")
         with row2[1]:
              if st.button("▼", key=f"{key_prefix}_down"):
                 line_info["pt"] += 10
+                line_info["padding_corrected"] = True
                 st.rerun(scope="fragment")
         with row2[2]:
             if st.button("▶", key=f"{key_prefix}_right"):
                 line_info["pr"] += 10
+                line_info["padding_corrected"] = True
                 st.rerun(scope="fragment")
 
 
@@ -87,12 +92,21 @@ def show_segment_compact(segment_idx, line_info, base_img, unique_tag=""):
     with col_text:
 
         text_key = f"text_{unique_tag}_{segment_idx}"
-        line_info["text"] = st.text_input(
+
+        if "original_text" not in line_info:
+            line_info["original_text"] = line_info["text"]
+
+        new_text = st.text_input(
             f"Edit text (Segment #{segment_idx+1}):",
             value=line_info["text"],
             key=text_key,
             label_visibility="collapsed"
         )
+
+        # Compare to original
+        if new_text != line_info["original_text"]:
+            line_info["text_corrected"] = True
+            line_info["text"] = new_text
     with col_dpad_title:
         st.markdown("**Padding**")
 
@@ -234,6 +248,8 @@ def main():
                             "bbox": bbox,
                             "text": text,
                             "approved": True,
+                            "text_corrected": False,
+                            "padding_corrected": False,
                             "pl": 0, "pr": 0, "pt": 0, "pb": 0
                         })
 

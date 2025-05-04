@@ -14,6 +14,9 @@ import zipfile
 from io import BytesIO
 import shutil
 from docuwarp.unwarp import Unwarp
+# import pytesseract
+# from pytesseract import Output
+
 
 class Image:
 
@@ -180,6 +183,29 @@ class utills:
                 x, y, w, h = cv2.boundingRect(cnt)
                 lines.append([x-x_pad, y-y_pad, w+x_pad*2, h+y_pad*2])
         return lines[::-1]
+    # @staticmethod
+    # def findLinesTesseract(full_image):
+    #     x_pad = 0
+    #     y_pad = 0
+    #     gray = full_image
+    #     # Use Tesseract to detect text lines
+    #     results = pytesseract.image_to_data(gray, output_type=Output.DICT)
+
+    #     lines = []
+
+    #     # Iterate through detected elements to find line-level data
+    #     for i in range(len(results['level'])):
+    #         if results['level'][i] == 4:  # Level 4 corresponds to lines
+    #             x = results['left'][i]
+    #             y = results['top'][i]
+    #             w = results['width'][i]
+    #             h = results['height'][i]
+
+    #             # Apply padding and append the line bbox to the list
+    #             lines.append([x - x_pad, y - y_pad, w + x_pad * 2, h + y_pad * 2])
+
+    #     # Reverse order of lines to match original function's behavior
+    #     return lines[::-1]
 
     # Function to transform a bounding box from aligned PDF image back to original PDF coordinates
     @staticmethod
@@ -274,11 +300,19 @@ class utills:
         shutil.rmtree(output_dir)
         img_dir = f"{output_dir}/images"
         os.makedirs(img_dir, exist_ok=True)
-
+        line_count = len(segments)
+        approved_text_corrected_line_count = 0
+        approved_padding_corrected_line_count = 0
+        rejected_line_count =0
         for segment in segments:
             if not segment["approved"]:
+                rejected_line_count+=1
                 continue
-
+            if segment["text_corrected"]:
+                approved_text_corrected_line_count+=1
+            if segment["padding_corrected"]:
+                approved_padding_corrected_line_count+=1
+        
             cropped_img = Image(photo_img).crop(
             segment["bbox"],
             pl=segment["pl"],
@@ -295,7 +329,9 @@ class utills:
             images.append(unique_filename)
             # print("image",len(images))
             texts.append(segment["text"])
-
+        approval_percantage = round((line_count-rejected_line_count)/line_count*100,2)
+        approved_padding_or_text_corrected_line_count = max(approved_padding_corrected_line_count,approved_text_corrected_line_count)
+        approval_without_editing_percentage = round((line_count-rejected_line_count-approved_padding_or_text_corrected_line_count)/line_count,2)
         # Save the DataFrame as a CSV
         df = pd.DataFrame({'image_name': images, 'Text': texts})
         csv_path = f"{output_dir}/page_{page_num}_annotation.csv"
@@ -310,7 +346,7 @@ class utills:
                 zip_file.write(img_path, arcname=f"page_{page_num}_images/{img_file}")
 
             # Add the CSV file to the ZIP file
-            zip_file.write(csv_path, arcname=f"page_{page_num}_annotation.csv")
+            zip_file.write(csv_path, arcname=f"page_{page_num}_annotation(approved_{approval_percantage}% approved_without_editing_{approval_without_editing_percentage}%).csv")
 
         shutil.rmtree(output_dir)
 
